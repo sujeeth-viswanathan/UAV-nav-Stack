@@ -46,6 +46,7 @@ Although full end-to-end Gazebo simulations are pending, the entire framework is
 source install/setup.bash
 ros2 launch full_system_launch.py
 
-Author
+
+## Author
 Sujeeth Viswanthan
 Capstone Project – EG 6011
