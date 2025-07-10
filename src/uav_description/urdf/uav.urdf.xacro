@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="dji_quad">
+
+  <!-- Materials -->
+  <material name="black"><color rgba="0 0 0 1"/></material>
+  <material name="red"><color rgba="1 0 0 1"/></material>
+  <material name="gray"><color rgba="0.5 0.5 0.5 1"/></material>
+  <material name="blue"><color rgba="0 0 1 1"/></material>
+  <material name="green"><color rgba="0 1 0 1"/></material>
+
+  <!-- Base link -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.3 0.3 0.05"/>
+      </geometry>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.3 0.3 0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.02"/>
+    </inertial>
+  </link>
+
+  <!-- Macro for arms and rotors -->
+  <xacro:macro name="arm_with_rotor" params="name x y color">
+    <link name="${name}_arm">
+      <visual>
+        <geometry>
+          <cylinder radius="0.01" length="0.3"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+      <origin xyz="${x} ${y} 0" rpy="0 0 1.57"/>
+    </link>
+
+    <joint name="${name}_arm_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}_arm"/>
+      <origin xyz="${x} ${y} 0" rpy="0 0 1.57"/>
+    </joint>
+
+    <link name="${name}_rotor">
+      <visual>
+        <geometry>
+          <cylinder radius="0.05" length="0.01"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+    </link>
+
+    <joint name="${name}_rotor_joint" type="fixed">
+      <parent link="${name}_arm"/>
+      <child link="${name}_rotor"/>
+      <origin xyz="0 0 0.05" rpy="0 0 0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Arms + Rotors -->
+  <xacro:arm_with_rotor name="FL" x="0.15" y="0.15" color="red"/>
+  <xacro:arm_with_rotor name="FR" x="0.15" y="-0.15" color="black"/>
+  <xacro:arm_with_rotor name="BL" x="-0.15" y="0.15" color="black"/>
+  <xacro:arm_with_rotor name="BR" x="-0.15" y="-0.15" color="red"/>
+
+  <!-- Camera -->
+  <link name="camera_link">
+    <visual>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0 0 -0.05" rpy="0 0 0"/>
+  </joint>
+
+  <!-- IMU -->
+  <link name="imu_link">
+    <visual>
+      <geometry>
+        <box size="0.02 0.02 0.02"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <inertial>
+      <mass value="0.01"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="1e-5" iyy="1e-5" izz="1e-5" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0.05" rpy="0 0 0"/>
+  </joint>
+
+  <gazebo reference="imu_link">
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+      <ros>
+        <remapping>imu:=/imu/data</remapping>
+      </ros>
+      <update_rate>100.0</update_rate>
+      <topic_name>/imu/data</topic_name>
+      <gaussian_noise>0.005</gaussian_noise>
+      <frame_name>imu_link</frame_name>
+    </plugin>
+  </gazebo>
+
+  <!-- GPS -->
+  <link name="gps_link">
+    <visual>
+      <geometry>
+        <box size="0.02 0.02 0.02"/>
+      </geometry>
+      <material name="green"/>
+    </visual>
+    <inertial>
+      <mass value="0.01"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="1e-5" iyy="1e-5" izz="1e-5" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+
+  <joint name="gps_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="gps_link"/>
+    <origin xyz="0 0 -0.05" rpy="0 0 0"/>
+  </joint>
+
+  <gazebo reference="gps_link">
+    <plugin name="gps_plugin" filename="libgazebo_ros_gps.so">
+      <ros>
+        <remapping>fix:=/gps/fix</remapping>
+      </ros>
+      <update_rate>5.0</update_rate>
+      <topic_name>/gps/fix</topic_name>
+      <gaussian_noise>0.0005</gaussian_noise>
+      <frame_name>gps_link</frame_name>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="base_link">
+    <plugin name="force_move_plugin" filename="libgazebo_ros_force_based_move.so">
+      <ros>
+        <remapping>cmd_vel:=/cmd_vel</remapping>
+      </ros>
+      <topic_name>/cmd_vel</topic_name>
+      <body_name>base_link</body_name>
+      <frame_name>base_link</frame_name>
+    </plugin>
+  </gazebo>
+
+</robot>

@@ -1,3 +1,4 @@
+
 # 🌦️ Robust UAV Navigation Framework for Adverse Weather Conditions
 
 This repository contains the ROS 2–based implementation of a modular, deterministic UAV navigation framework designed to maintain safe, energy-efficient, and mission-critical drone deliveries under challenging environmental conditions like wind, fog, and rain.
@@ -56,3 +57,6 @@ Capstone Project – EG 6011
 
  
 
+=======
+# UAV Navigation Stack (ROS 2 Humble)
+>>>>>>> 7d942a7 (Initial commit — ROS 2 Humble UAV workspace)
