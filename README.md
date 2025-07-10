@@ -51,7 +51,7 @@ ros2 launch full_system_launch.py
 
 ## 👤 Author
 
-**Sujeeth Viswanthan**  
+**Sujeeth Viswanathan**  
 Capstone Project – EG 6011
 
  
