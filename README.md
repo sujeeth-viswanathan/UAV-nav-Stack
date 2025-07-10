@@ -55,8 +55,4 @@ ros2 launch full_system_launch.py
 **Sujeeth Viswanathan**  
 Capstone Project – EG 6011
 
- 
 
-=======
-# UAV Navigation Stack (ROS 2 Humble)
->>>>>>> 7d942a7 (Initial commit — ROS 2 Humble UAV workspace)
